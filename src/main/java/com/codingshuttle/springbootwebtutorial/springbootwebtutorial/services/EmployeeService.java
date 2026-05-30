@@ -2,7 +2,7 @@ package com.codingshuttle.springbootwebtutorial.springbootwebtutorial.services;
 
 import com.codingshuttle.springbootwebtutorial.springbootwebtutorial.dto.EmployeeDTO;
 import com.codingshuttle.springbootwebtutorial.springbootwebtutorial.entities.EmployeeEntity;
-import com.codingshuttle.springbootwebtutorial.springbootwebtutorial.exceptions.ResourceNotFoundException;
+import com.codingshuttle.springbootwebtutorial.springbootwebtutorial.exceptions.ResourceNotFound1;
 import com.codingshuttle.springbootwebtutorial.springbootwebtutorial.repositories.EmployeeRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.util.ReflectionUtils;
@@ -50,7 +50,7 @@ public class EmployeeService {
     }
 
     public EmployeeDTO updateEmployeeById(Long employeeId, EmployeeDTO employeeDTO) {
-        isExistsByEmployeeId(employeeId);
+       isExistsByEmployeeId(employeeId);
         EmployeeEntity employeeEntity = modelMapper.map(employeeDTO, EmployeeEntity.class);
         employeeEntity.setId(employeeId);
         EmployeeEntity savedEmployeeEntity = employeeRepository.save(employeeEntity);
@@ -59,17 +59,17 @@ public class EmployeeService {
 
     public void isExistsByEmployeeId(Long employeeId) {
         boolean exists = employeeRepository.existsById(employeeId);
-        if(!exists) throw new ResourceNotFoundException("Employee not found with id: "+employeeId);
+        if(!exists) throw new ResourceNotFound1("Employee not found with id: "+employeeId);
     }
 
     public boolean deleteEmployeeById(Long employeeId) {
-        isExistsByEmployeeId(employeeId);
+       isExistsByEmployeeId(employeeId);
         employeeRepository.deleteById(employeeId);
         return true;
     }
 
     public EmployeeDTO updatePartialEmployeeById(Long employeeId, Map<String, Object> updates) {
-        isExistsByEmployeeId(employeeId);
+     isExistsByEmployeeId(employeeId);
         EmployeeEntity employeeEntity = employeeRepository.findById(employeeId).get();
         updates.forEach((field, value) -> {
             Field fieldToBeUpdated = ReflectionUtils.findRequiredField(EmployeeEntity.class, field);
