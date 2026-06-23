@@ -2,6 +2,7 @@ package com.codingshuttle.springbootwebtutorial.springbootwebtutorial.services;
 
 
 import com.codingshuttle.springbootwebtutorial.springbootwebtutorial.dto.LoginDto;
+import com.codingshuttle.springbootwebtutorial.springbootwebtutorial.dto.LoginResponseDto;
 import com.codingshuttle.springbootwebtutorial.springbootwebtutorial.dto.SignupDto;
 import com.codingshuttle.springbootwebtutorial.springbootwebtutorial.dto.UserDto;
 import com.codingshuttle.springbootwebtutorial.springbootwebtutorial.entities.User;
@@ -28,6 +29,11 @@ public class UserService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
 
+    public User saveUser(User newUser)
+    {
+        return userRepo.save(newUser);
+    }
+
     public UserDto singUpUser(SignupDto signUpDto) {
 
         Optional<User> user = userRepo.findByEmail(signUpDto.getEmail());
@@ -43,13 +49,14 @@ public class UserService {
         return modelMapper.map(savedUser, UserDto.class);
     }
 
-    public String login(LoginDto loginDto) {
+    public LoginResponseDto login(LoginDto loginDto) {
      Authentication authentication = authenticationManager.authenticate(
              new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword())
      );
 
      User user = (User) authentication.getPrincipal();
-     String token = jwtService.generateToken(user);
-     return  token;
+     String accessToken = jwtService.generateAccessToken(user);
+     String refreshToken = jwtService.generateRefreshToken(user);
+     return  new LoginResponseDto(user.getId(), accessToken, refreshToken);
     }
 }

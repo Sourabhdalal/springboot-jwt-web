@@ -1,5 +1,7 @@
 package com.codingshuttle.springbootwebtutorial.springbootwebtutorial.services;
 
+import com.codingshuttle.springbootwebtutorial.springbootwebtutorial.entities.User;
+import com.codingshuttle.springbootwebtutorial.springbootwebtutorial.exceptions.ResourceNotFound1;
 import com.codingshuttle.springbootwebtutorial.springbootwebtutorial.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,4 +23,17 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .orElseThrow(() ->
                         new UsernameNotFoundException("User not found"));
     }
+
+    public User getUserByEmail(String email)
+    {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() ->
+                        new UsernameNotFoundException("User not found"));
+    }
+
+    public User getUserId(Long userId)
+    {
+        return userRepository.findById(userId).orElseThrow(() -> new ResourceNotFound1("User not found with Id " + userId));
+    }
+
 }
