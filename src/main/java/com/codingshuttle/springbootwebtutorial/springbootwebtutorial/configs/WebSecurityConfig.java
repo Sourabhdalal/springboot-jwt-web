@@ -2,6 +2,7 @@ package com.codingshuttle.springbootwebtutorial.springbootwebtutorial.configs;
 
 
 import com.codingshuttle.springbootwebtutorial.springbootwebtutorial.filter.JwtAuthFilter;
+import com.codingshuttle.springbootwebtutorial.springbootwebtutorial.filter.LoggingFilter;
 import com.codingshuttle.springbootwebtutorial.springbootwebtutorial.handler.OAuth2SuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -21,22 +22,26 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import static com.codingshuttle.springbootwebtutorial.springbootwebtutorial.entities.enums.Role.ADMIN;
+
 @Configuration
-@EnableWebSecurity
+//@EnableWebSecurity
 @RequiredArgsConstructor
 public class WebSecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
+    private final LoggingFilter loggingFilter;
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception
     {
         httpSecurity.csrf(AbstractHttpConfigurer::disable).
                 authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/employees", "/auth/**").permitAll()
-                      //  .requestMatchers("/employees/**").hasRole("ADMIN")
+                        .requestMatchers( "/auth/**").permitAll()
+//                        .requestMatchers("/employees/**").permitAll()
                         .anyRequest().authenticated())
+                .addFilterBefore(loggingFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
               //  .oauth2Login(oautconfig -> oautconfig.failureUrl("logn.com")
                //         .successHandler(oAuth2SuccessHandler));

@@ -5,6 +5,8 @@ import com.codingshuttle.springbootwebtutorial.springbootwebtutorial.entities.Em
 import com.codingshuttle.springbootwebtutorial.springbootwebtutorial.exceptions.ResourceNotFound1;
 import com.codingshuttle.springbootwebtutorial.springbootwebtutorial.repositories.EmployeeRepository;
 import org.modelmapper.ModelMapper;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.util.ReflectionUtils;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +21,7 @@ public class EmployeeService {
 
     private final EmployeeRepository employeeRepository;
     private final ModelMapper modelMapper;
+    private final String CACHE_NAME = "employs";
 
     public EmployeeService(EmployeeRepository employeeRepository, ModelMapper modelMapper) {
         this.employeeRepository = employeeRepository;
@@ -26,6 +29,7 @@ public class EmployeeService {
     }
 
 
+    @Cacheable(cacheNames = CACHE_NAME , key = "#id")
     public Optional<EmployeeDTO> getEmployeeById(Long id) {
 //        Optional<EmployeeEntity> employeeEntity = employeeRepository.findById(id);
 //        return employeeEntity.map(employeeEntity1 -> modelMapper.map(employeeEntity1, EmployeeDTO.class));
@@ -41,6 +45,7 @@ public class EmployeeService {
                 .collect(Collectors.toList());
     }
 
+    @CachePut(cacheNames = CACHE_NAME , key = "#result.id")
     public EmployeeDTO createNewEmployee(EmployeeDTO inputEmployee) {
 //        to check if user is admin
 //        log something
@@ -49,6 +54,7 @@ public class EmployeeService {
         return modelMapper.map(savedEmployeeEntity, EmployeeDTO.class);
     }
 
+    @CachePut(cacheNames = CACHE_NAME , key = "#result.id")
     public EmployeeDTO updateEmployeeById(Long employeeId, EmployeeDTO employeeDTO) {
        isExistsByEmployeeId(employeeId);
         EmployeeEntity employeeEntity = modelMapper.map(employeeDTO, EmployeeEntity.class);
@@ -68,6 +74,7 @@ public class EmployeeService {
         return true;
     }
 
+    @CachePut(cacheNames = CACHE_NAME , key = "#result.id")
     public EmployeeDTO updatePartialEmployeeById(Long employeeId, Map<String, Object> updates) {
      isExistsByEmployeeId(employeeId);
         EmployeeEntity employeeEntity = employeeRepository.findById(employeeId).get();
